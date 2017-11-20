@@ -1,0 +1,130 @@
+---
+title: "Motif analysis template"
+author: "Zhen Gao for motifs of two groups"
+date: "Nov 20, 2017"
+output: 
+  html_document: 
+  fig_height: 10
+  fig_width: 10
+---
+
+```{r, message=FALSE, eval=TRUE}
+
+install.packages("seqinr")
+require("seqinr")
+require("knitr")
+
+options(scipen=500)
+```
+
+
+## I. Standard analysis
+
+### Directory of output (modify code here for different output directory or other projects)
+  
+```{r, eval=FALSE}
+David_countdir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_UTR/Count/"
+David_dir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME"
+Date = Sys.Date()
+Project = paste0("David_", Date)
+Out_dir = paste0(David_dir, "/Result/", Project, "/")
+dir.create(paste0(David_dir, "/Result/"), showWarnings = F)
+dir.create(Out_dir, showWarnings = F)
+Out_dir
+```
+
+### define and locate 100bp around summit peak
+
+```{r, eval=FALSE}
+# the file 2470IUPUI_BM_intervals.csv contains the peak summit with annotation for all samples
+summit.intervals = read.csv(file.path(David_dir, "UTR_5_for_gene_up.csv"), header = T, check.names = F)
+#summit.intervals = read.csv(file.path(David_dir, "UTR_5_for_gene_no_change.csv"), header = T, check.names = F)
+summit.intervals$Start = summit.intervals$V4 #Start
+summit.intervals$End = summit.intervals$V5 #End
+summit.intervals = summit.intervals[which(summit.intervals$End - summit.intervals$Start > 8),] # the length > 8 for MEME motif length
+summit.intervals$Chromosome = summit.intervals$V1 #Chromosome
+Chromosome1 = as.character(summit.intervals$Chromosome)
+summit.intervals$Chromosome2 =  sapply(strsplit(Chromosome1, ".", fixed = TRUE), "[", 1)  # dot needs specail treatment
+unique(summit.intervals$Chromosome2)
+```
+### Retrieve DNA sequence based on the peak region
+
+```{r, eval=FALSE}
+# extract DNA sequence from genome reference
+#chr_dir = "/media/MyDATA/Genome_Ref/Mus_musculus_UCSC_mm10/Mus_musculus/UCSC/mm10/Sequence/Chromosomes/" $$$$$
+chr_dir = "/media/H_driver/Annotation/hg38/Sequence/Chromosomes/" #human by ZG
+chromosome_list1 = as.character(dir(chr_dir))
+
+#chromosome_list2 =  sapply(strsplit(chromosome_list1, c(".","v"), fixed = TRUE), "[", 1)  # dot needs specail treatment
+chromosome_list2 =  sapply(strsplit(chromosome_list1, ".", fixed = TRUE), "[", 1)  # dot needs specail treatment
+chromosome_list2 =  sapply(strsplit(chromosome_list2, "v", fixed = TRUE), "[", 1)  # dot needs specail treatment
+
+for (i in 1:length(chromosome_list2)){
+    if(grepl("_", chromosome_list2[i])){
+        #print("Y") 
+        inner_str = as.character(chromosome_list2[i])
+        chromosome_list2[i] = strsplit(inner_str, "_", fixed = TRUE, "[[", 2)  
+        #chromosome_list2[i] = unlist(chromosome_list2[i])[2]
+    }
+}
+
+chromosome_list3 <- lapply(chromosome_list2, function(u){
+    if(length(u)==1){
+        x<-u    
+    }else{
+        x<-u[2]        
+    }
+    x    
+})
+chromosome_list4 = unlist(chromosome_list3)
+load.chr = unique(chromosome_list4)
+
+summit.intervals2 = summit.intervals[which(summit.intervals$Chromosome2  %in% chromosome_list4),]
+
+require(seqinr)
+require(Biostrings)
+for (i in 1:length(load.chr)){
+  cat("Fetching ", load.chr[i], "...")  
+  if(exists(load.chr[i])){
+    cat("Loaded!\n")
+    next
+  }
+  if(length(grep(paste0(load.chr[i], ".fa"), dir(chr_dir)))>0){
+    tmp.matchID = which(dir(chr_dir)==paste0(load.chr[i], ".fa"))
+    assign(load.chr[i], read.fasta(paste0(chr_dir, dir(chr_dir)[tmp.matchID]), seqtype="DNA"), 
+         envir = .GlobalEnv)
+    cat("OK!\n")
+  }else{
+    cat("FAIL!\n")
+  }
+  #rm(list=gsub(".fa", "", dir(chr_dir)[i]))
+}
+
+retrieve_fastq_interval = function(data_intervals){
+  seq_interval = rep("", nrow(data_intervals))
+  for(j in 1:nrow(data_intervals)){
+    chr.name = as.character(data_intervals$Chromosome[j])
+    pos.start = data_intervals$Start[j]
+    pos.end = data_intervals$End[j]
+    #cat(chr.name, "\n")
+    if(!exists(chr.name)){
+      if(file.exists(paste0(chr_dir, paste0(chr.name, ".fa")))){
+        assign(chr.name, 
+              read.fasta(paste0(chr_dir, paste0(chr.name, ".fa")), seqtype="DNA"), 
+              envir = .GlobalEnv)
+      }else{
+        next
+      }
+    }
+    seq_interval[j] = (paste(get(chr.name)[[1]][pos.start:pos.end], collapse = ""))
+  }
+  names(seq_interval) = 1:length(seq_interval)
+  DNAStringSet(seq_interval)
+}
+# retrieve DNA sequence
+seq.WT.BM.SMC1 = retrieve_fastq_interval(summit.intervals2)
+
+# output peak sequence file
+writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(David_dir, "/seq.WT.BM.SMC1.summit_up.txt"),  append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
+#writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(David_dir, "/seq.WT.BM.SMC1.summit_no_change.txt"), append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
+```
