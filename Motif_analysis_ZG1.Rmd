@@ -23,7 +23,7 @@ options(scipen=500)
 ### Directory of output (modify code here for different output directory or other projects)
   
 ```{r, eval=FALSE}
-David_countdir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_UTR/Count/"
+David_countdir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/Miyoung_Shin/Count/"
 David_dir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME"
 Date = Sys.Date()
 Project = paste0("David_", Date)
