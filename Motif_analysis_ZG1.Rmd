@@ -10,7 +10,7 @@ output:
 
 ```{r, message=FALSE, eval=TRUE}
 
-install.packages("seqinr")
+#install.packages("seqinr")
 require("seqinr")
 require("knitr")
 
@@ -22,13 +22,13 @@ options(scipen=500)
 
 ### Directory of output (modify code here for different output directory or other projects)
   
-```{r, eval=FALSE}
-David_countdir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/Miyoung_Shin/Count/"
-David_dir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME"
+```{r, eval=FALSE, background='#000000'}
+#Miyoung_countdir = "/media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/Miyoung_Shin/Count/"
+Miyoung_dir = "/media/2T_Disk/Dropbox/BBSR_P/Miyoung_Shin/MEME"
 Date = Sys.Date()
-Project = paste0("David_", Date)
-Out_dir = paste0(David_dir, "/Result/", Project, "/")
-dir.create(paste0(David_dir, "/Result/"), showWarnings = F)
+Project = paste0("Miyoung_", Date)
+Out_dir = paste0(Miyoung_dir, "/Result/", Project, "/")
+dir.create(paste0(Miyoung_dir, "/Result/"), showWarnings = F)
 dir.create(Out_dir, showWarnings = F)
 Out_dir
 ```
@@ -37,8 +37,8 @@ Out_dir
 
 ```{r, eval=FALSE}
 # the file 2470IUPUI_BM_intervals.csv contains the peak summit with annotation for all samples
-summit.intervals = read.csv(file.path(David_dir, "UTR_5_for_gene_up.csv"), header = T, check.names = F)
-#summit.intervals = read.csv(file.path(David_dir, "UTR_5_for_gene_no_change.csv"), header = T, check.names = F)
+summit.intervals = read.csv(file.path(Miyoung_dir, "UTR_5_for_gene_up.csv"), header = T, check.names = F)
+#summit.intervals = read.csv(file.path(Miyoung_dir, "UTR_5_for_gene_no_change.csv"), header = T, check.names = F)
 summit.intervals$Start = summit.intervals$V4 #Start
 summit.intervals$End = summit.intervals$V5 #End
 summit.intervals = summit.intervals[which(summit.intervals$End - summit.intervals$Start > 8),] # the length > 8 for MEME motif length
@@ -125,6 +125,6 @@ retrieve_fastq_interval = function(data_intervals){
 seq.WT.BM.SMC1 = retrieve_fastq_interval(summit.intervals2)
 
 # output peak sequence file
-writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(David_dir, "/seq.WT.BM.SMC1.summit_up.txt"),  append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
-#writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(David_dir, "/seq.WT.BM.SMC1.summit_no_change.txt"), append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
+writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(Miyoung_dir, "/seq.WT.BM.SMC1.summit_up.txt"),  append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
+#writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(Miyoung_dir, "/seq.WT.BM.SMC1.summit_no_change.txt"), append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
 ```

@@ -1,0 +1,52 @@
+-) get the up down no-change genes from David Ho, (eIF5B pSILAC analysis.xlsx)
+-) split the file to 3 different files up: "eIF5B pSILAC_up.xlsx"  down:"eIF5B pSILAC_down.xlsx" ", no-change:"eIF5B pSILAC_no_change.xlsx"
+-) save the file to corresponidng csv files
+
+-) "feature_id3.R", change "eIF5B pSILAC_up.csv"  to "UTR_5_for_gene_up_with_symbol.csv"
+-) "feature_id5-for-ex-level-3UTR.R", change "eIF5B pSILAC_up.csv"  to "UTR_3_for_info_up.csv"
+
+
+0) 
+
+1) run (Motif_analysis_ZG1.Rmd)  seq.WT.BM.SMC1.summit_up.txt
+
+#### 2) find the emsembl_gene_id    ensembl_transcript_id with gene name provided  with (feature_id3.R)
+
+3) run meme 
+
+3.1) no database
+
+meme seq.WT.BM.SMC1.summit_up.txt        -dna -mod zoops  -minw 8  -maxsize 300000
+meme seq.WT.BM.SMC1.summit_no_change.txt -dna -mod zoops  -minw 10 -maxsize 600000
+meme seq.WT.BM.SMC1.summit_down.txt      -dna -mod zoops  -minw 8  -maxsize 500000
+
+3.2) with database
+meme-chip -oc David_meme-chip_summit-up/ -db /home/gao/Softwares/meme/db/HOCOMOCOv10_HUMAN_mono_meme_format.meme  seq.WT.BM.SMC1.summit_up.txt -spamo-skip -fimo-skip &> David.log.summit_up& 
+
+4.1) open the meme.html
+4.2) select the Discoved Motifs
+4.3) select the "right arrow" 
+4.4) select the "minimal MEME" and save as a file named "minimal_MEME_motif_no_change.txt"
+
+5) run commnand:
+fimo minimal_MEME_motif_up.txt        /media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME/seq.WT.BM.SMC1.summit_up.txt                     # 05-06
+fimo minimal_MEME_motif_up.txt        /media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME/Result/memo/seq.WT.BM.SMC1.summit_up.txt         # 05-07
+fimo minimal_MEME_motif_no_change.txt /media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME/Result/memo/seq.WT.BM.SMC1.summit_no_change.txt
+fimo minimal_MEME_motif_down.txt      /media/2T_Disk/Dropbox/Zhen_Gao/BBSR_P/David_MEME/Result/memo/seq.WT.BM.SMC1.summit_down.txt
+
+
+5.9) /media/2T_Disk/Dropbox/BBSR_P/David-Ho/David_MEME/Result/memo   matched_seq_handling.Rmd/matched_seq_handling_both_p_n.Rmd  change "fimo_up.tsv" 
+to "seq.WT.BM.SMC1.summit_up.fa"   
+
+6) run  (filter_short_seq.R) to get the seq with length > 20 here, and get the total sequnce number (in ./David_MEME/sequence_for_supmit_to_meme/)
+
+7) rename the fimo.txt out in the fimo folder to fimo.tsv and remove the "#" in the begininng of first sentence
+
+8) run (matched_seq_handling_both_p_n.Rmd) get the seq contain motif
+
+9) calculate the seq conatin / totla sequence number
+
+up :       1344/3024 = 44.4%
+no_change:  101/4141 =  2.4%
+down:       137/1739 =  7.9%
+
