@@ -128,3 +128,5 @@ seq.WT.BM.SMC1 = retrieve_fastq_interval(summit.intervals2)
 writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(Miyoung_dir, "/seq.WT.BM.SMC1.summit_up.txt"),  append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
 #writeXStringSet(seq.WT.BM.SMC1, filepath=paste0(Miyoung_dir, "/seq.WT.BM.SMC1.summit_no_change.txt"), append=FALSE,compress=FALSE, compression_level=NA, format="fasta")
 ```
+
+# just test github
